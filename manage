@@ -1,0 +1,11 @@
+#!/bin/bash
+export FLASK_APP=`pwd`/url_shortener/__init__.py
+
+if [ -e ".env.local" ]
+then
+  LOCAL_ENV=`cat .env .env.local | egrep -v '^\#' | xargs`
+else
+  LOCAL_ENV=`cat .env | egrep -v '^\#' | xargs`
+fi
+
+env `echo $LOCAL_ENV` python -m url_shortener.cli "$@"
