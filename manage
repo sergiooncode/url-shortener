@@ -8,4 +8,4 @@ else
   LOCAL_ENV=`cat .env | egrep -v '^\#' | xargs`
 fi
 
-env `echo $LOCAL_ENV` python -m url_shortener.cli "$@"
+env `echo $LOCAL_ENV` python manage.py "$@"

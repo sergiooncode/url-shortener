@@ -31,12 +31,11 @@ pip install -r requirements-dev.txt
 make test
 ```
 
-## API Usage
 
-Describe how to use API.
+## API Usage
+----
 
 ### Redirect to target url
-----
 
 - **URL**
 
@@ -58,13 +57,12 @@ Describe how to use API.
 - **Error Response:**
 
   - **Code:** 404 NOT FOUND <br />
-    When / route is hit:
-    **Content:** `{ error : "not found" }`
-    When /:hashed_id route is hit but hashed_id doesn't exist
-    **Content:** `{ error : "no redirects found for short url <short_url>" }`
+    - When / route is hit:
+    **Content:** `{ "error" : "not found" }`
+    - When /:hashed_id route is hit but hashed_id doesn't exist
+    **Content:** `{ "error" : "no redirects found for short url <shortUrl>" }`
 
 ### Create redirect short url to target url
-----
 
 - **URL**
 
@@ -76,21 +74,51 @@ Describe how to use API.
 
 - **Data Params:**
   **Required:**
-  `hashed_id=[string]`
+  `longUrl=[string]`
 
 - **Success Response:**
 
-  - **Code:** 302 FOUND <br />
-    **Content:** `{ }`
+  - **Code:** 200 OK <br />
+    **Content:** `{ "shortUrl": <shortUrl> }`
+
+### Get data about all existing redirects
+
+- **URL**
+
+  /redirects
+
+-  **Method:**
+  
+   `GET`
+
+- **Success Response:**
+
+  - **Code:** 200 OK <br />
+    **Content:** 
+    `{
+         "<hashed_id>": [
+             {
+                 "longUrl": <mobile_target_url>,
+                 "redirectCount": <count>,
+                 "sinceCreation": <since_creation>,
+                 "type": "mobile"
+             },
+             {
+                 "longUrl": <tablet_target_url>,
+                 "redirectCount": <count>,
+                 "sinceCreation": <since_creation>,
+                 "type": "tablet"
+             },
+             {
+                 "longUrl": <desktop_target_url>,
+                 "redirectCount": <count>,
+                 "sinceCreation": <since_creation>,
+                 "type": "desktop"
+             }
+         ],
+         ...
+     }`
  
-- **Error Response:**
-
-  - **Code:** 404 NOT FOUND <br />
-    When route / is hit:
-    **Content:** `{ error : "not found" }`
-    When route /:hashed_id is hit but hashed_id doesn't exist
-    **Content:** `{ error : "no redirects found for short url <short_url>" }`
-
 ## Design Decisions
 
 ### API
