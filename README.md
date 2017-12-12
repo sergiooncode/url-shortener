@@ -1,4 +1,4 @@
-# URL Shortener API
+# URL Shortener
 
 URL Shortener à la bit.ly but way humbler. The Shortener is exposed through an API with endpoints to create a redirect between short url to target url, configure target url for different types of devices, get statistics about redirects, and hit short url and get redirected to target url.
 
@@ -33,29 +33,31 @@ make test
 
 ## API Usage
 
+Describe how to use API.
+
 ### Redirect to target url
 ----
 
-* **URL**
+- **URL**
 
   /:hashed_id
 
-*  **Method:**
+-  **Method:**
   
    `GET`
 
-* **URL Params:**
+- **URL Params:**
   **Required:**
   `hashed_id=[string]`
 
-* **Success Response:**
+- **Success Response:**
 
-  * **Code:** 302 FOUND <br />
+  - **Code:** 302 FOUND <br />
     **Content:** `{ }`
  
-* **Error Response:**
+- **Error Response:**
 
-  * **Code:** 404 NOT FOUND <br />
+  - **Code:** 404 NOT FOUND <br />
     When / route is hit:
     **Content:** `{ error : "not found" }`
     When /:hashed_id route is hit but hashed_id doesn't exist
@@ -64,26 +66,26 @@ make test
 ### Create redirect short url to target url
 ----
 
-* **URL**
+- **URL**
 
   /redirects
 
-*  **Method:**
+-  **Method:**
   
    `POST`
 
-* **Data Params:**
+- **Data Params:**
   **Required:**
   `hashed_id=[string]`
 
-* **Success Response:**
+- **Success Response:**
 
-  * **Code:** 302 FOUND <br />
+  - **Code:** 302 FOUND <br />
     **Content:** `{ }`
  
-* **Error Response:**
+- **Error Response:**
 
-  * **Code:** 404 NOT FOUND <br />
+  - **Code:** 404 NOT FOUND <br />
     When route / is hit:
     **Content:** `{ error : "not found" }`
     When route /:hashed_id is hit but hashed_id doesn't exist
