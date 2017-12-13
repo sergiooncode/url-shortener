@@ -25,10 +25,14 @@ pip install -r requirements-dev.txt
 
 ## Running the tests
 
-- Run tests
-
 ```
 make test
+```
+
+## Running the URL Shortener API application
+
+```
+./manage runserver
 ```
 
 
@@ -58,9 +62,9 @@ make test
 
   - **Code:** 404 NOT FOUND <br />
     - When / route is hit:
-    **Content:** `{ "error" : "not found" }`
+      - **Content:** `{ "error" : "not found" }`
     - When /:hashed_id route is hit but hashed_id doesn't exist
-    **Content:** `{ "error" : "no redirects found for short url <shortUrl>" }`
+      - **Content:** `{ "error" : "no redirects found for short url <shortUrl>" }`
 
 ### Create redirect short url to target url
 
@@ -79,7 +83,7 @@ make test
 - **Success Response:**
 
   - **Code:** 200 OK <br />
-    **Content:** `{ "shortUrl": <shortUrl> }`
+      - **Content:** `{ "shortUrl": <shortUrl> }`
 
 ### Get data about all existing redirects
 
@@ -94,34 +98,69 @@ make test
 - **Success Response:**
 
   - **Code:** 200 OK <br />
-    **Content:** 
-    `{
-         "<hashed_id>": [
-             {
-                 "longUrl": <mobile_target_url>,
-                 "redirectCount": <count>,
-                 "sinceCreation": <since_creation>,
-                 "type": "mobile"
-             },
-             {
-                 "longUrl": <tablet_target_url>,
-                 "redirectCount": <count>,
-                 "sinceCreation": <since_creation>,
-                 "type": "tablet"
-             },
-             {
-                 "longUrl": <desktop_target_url>,
-                 "redirectCount": <count>,
-                 "sinceCreation": <since_creation>,
-                 "type": "desktop"
-             }
-         ],
-         ...
-     }`
+      - **Content:** 
+        ```json
+         {
+             "<hashed_id>": [
+                 {
+                     "longUrl": <mobile_target_url>,
+                     "redirectCount": <count>,
+                     "sinceCreation": <since_creation>,
+                     "type": "mobile"
+                 },
+                 {
+                     "longUrl": <tablet_target_url>,
+                     "redirectCount": <count>,
+                     "sinceCreation": <since_creation>,
+                     "type": "tablet"
+                 },
+                 {
+                     "longUrl": <desktop_target_url>,
+                     "redirectCount": <count>,
+                     "sinceCreation": <since_creation>,
+                     "type": "desktop"
+                 }
+             ],
+             ...
+         }
+        ```
+
+### Configure target url associated to a short url for specific devices
+
+- **URL**
+
+  /redirects/:hashed_id
+
+-  **Method:**
+  
+   `PATCH`
+
+- **URL Params:**
+  **Required:**
+  `hashed_id=[string]`
+
+- **Data Params:**
+  **Required:**
+  ```json
+   {
+          "mobile": <mobile_target_url>,
+          "tablet": <tablet_target_url>,
+          "desktop": <desktop_target_url>
+   }
+  ```
+
+- **Success Response:**
+
+  - **Code:** 200 OK <br />
+      - **Content:** `{ "shortUrl": <shortUrl> }`
  
 ## Design Decisions
 
 ### API
+
+The API was designed taking a REST-like approach. The endpoints uri represent the resource on which the request acts based on the HTTP verb (GET to read, POST to create and PATCH to update). Compliance with best practices around HTTP protocol were considered and that's why PATCH was chosen instead of PUT since the configuration of a shortened url described in the business rules implies a partial update (which fits the intended use of PATCH) and not an overwrite of the resource (which fits the intended use of PUT).
+
+Another intentional design approach taken was to make the error responses returned by the API be as informative and actionable as possible for its clients.
 
 ### DB Schema
 
