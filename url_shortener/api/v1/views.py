@@ -8,7 +8,7 @@ from url_shortener.utils import elapsed_time_in_seconds_since, \
     get_short_url
 from url_shortener.api.v1.error_messages import *
 
-api_v1 = Blueprint('api', __name__)
+api_v1 = Blueprint('api', __name__, url_prefix='/v1')
 
 
 @api_v1.route('/', methods=['GET'], defaults={'hashed_id': None})
@@ -21,7 +21,7 @@ def redirect_to_long_url(hashed_id):
         hashed_id=hashed_id
     ).first()
     if not redirect_instance or not redirect_instance.long_url:
-        error_message = NO_REDIRECT_FOUND_ERROR_MSG.format(
+        error_message = NO_REDIRECT_ERROR_MSG.format(
             hashed_id
         )
         return jsonify({"error": error_message}), 404
@@ -33,7 +33,7 @@ def redirect_to_long_url(hashed_id):
 @api_v1.route('/redirects', methods=['POST'])
 def create_redirect():
     if request.json is None:
-        return jsonify({"error": NO_LONG_URL_PROVIDED_ERROR_MSG}), 400
+        return jsonify({"error": NO_LONG_URL_ERROR_MSG}), 400
     long_url = request.json['longUrl']
     mobile_redirect = MobileRedirect(long_url=long_url)
     db.session.add(mobile_redirect)
@@ -72,15 +72,16 @@ def get_all_redirects():
 def update_long_url_mapped_for_device_to(hashed_id):
     data = request.json
     if not data:
-        return jsonify({"error": NO_CONFIG_PROVIDED_ERROR_MSG}), 400
+        return jsonify({"error": NO_CONFIG_ERROR_MSG}), 400
     normalized_data = {k.lower(): v for k, v in data.items()}
     redirect_instance = Redirect.query.filter_by(hashed_id=hashed_id).first()
     if redirect_instance is None:
-        error_message = NO_REDIRECT_FOUND_NOTHING_TO_CONFIGURE_ERROR_MSG.format(hashed_id)
+        error_message = NO_REDIRECT_WONT_CONFIGURE_ERROR_MSG.format(hashed_id)
         return jsonify({"error": error_message}), 404
     for type_string in normalized_data:
         device_model = get_device_model_from_device_string(type_string)
         if device_model is None:
+            # TODO: This following line should be logged properly
             print('url_shortener.api.v1.views: No model associated to type string {}'.format(type_string))
             continue
         redirect_instance = device_model.query.filter_by(

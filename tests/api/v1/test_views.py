@@ -62,7 +62,7 @@ class TestViews(APITestCase):
     def test_submit_long_url(self):
         long_url_dict = {'longUrl': 'http://www.google.com'}
         response = self.client.post(
-            '/redirects',
+            '/v1/redirects',
             data=json.dumps(long_url_dict),
             content_type='application/json'
         )
@@ -100,7 +100,7 @@ class TestViews(APITestCase):
         ) as elapsed_time_mock:
             elapsed_time_mock.return_value = expected_elapsed_time
             response = self.client.get(
-                '/redirects'
+                '/v1/redirects'
             )
 
         data = json.loads(response.data)
@@ -112,7 +112,7 @@ class TestViews(APITestCase):
         desktop_type_to_updated_long_url_dict = {
             DESKTOP_TYPE_STRING: updated_desktop_long_url
         }
-        uri = "{}/{}".format('/redirects', self.hashed_id)
+        uri = "{}/{}".format('/v1/redirects', self.hashed_id)
 
         response = self.client.patch(
             uri,
