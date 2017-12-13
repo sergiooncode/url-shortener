@@ -210,3 +210,23 @@ The API version label was hardcoded in URI in tests.api.v1.test_views intentiona
 
 - Set up proper logging
 - Check target url is valid when redirect is submitted
+
+
+## Bug list
+
+- Target URLs submitted to API with no scheme (http://) won't redirect correctly, log showcasing:
+
+```python
+url-shortener master* http :4000/v1/b
+HTTP/1.0 302 FOUND
+Content-Length: 233
+Content-Type: text/html; charset=utf-8
+Date: Wed, 13 Dec 2017 12:02:06 GMT
+Location: http://localhost:4000/www.marca.com
+Server: Werkzeug/0.13 Python/3.6.2
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<title>Redirecting...</title>
+<h1>Redirecting...</h1>
+<p>You should be redirected automatically to target URL: <a href="www.marca.com">www.marca.com</a>.  If not click the link.
+```
