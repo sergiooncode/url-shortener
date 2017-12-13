@@ -15,45 +15,46 @@ class TestViews(APITestCase):
         self.tablet_long_url = 'http://www.linkedin.com'
         self.mobile_long_url = 'http://news.ycombinator.com'
         self.hashed_id = 'v'
-        db.session.add_all([
-            DesktopRedirect(
-                id=21,
-                hashed_id=self.hashed_id,
-                long_url=self.long_url
-            ),
-            TabletRedirect(
-                id=22,
-                hashed_id=self.hashed_id,
-                long_url=self.tablet_long_url
-            ),
-            MobileRedirect(
-                id=23,
-                hashed_id=self.hashed_id,
-                long_url=self.mobile_long_url
-            )
-        ])
-        db.session.commit()
+        with self.app.app_context():
+            db.session.add_all([
+                DesktopRedirect(
+                    id=21,
+                    hashed_id=self.hashed_id,
+                    long_url=self.long_url
+                ),
+                TabletRedirect(
+                    id=22,
+                    hashed_id=self.hashed_id,
+                    long_url=self.tablet_long_url
+                ),
+                MobileRedirect(
+                    id=23,
+                    hashed_id=self.hashed_id,
+                    long_url=self.mobile_long_url
+                )
+            ])
+            db.session.commit()
 
     def tearDown(self):
         super().tearDown()
 
     def test_hashed_id_not_found(self):
-        response = self.get_request_from_desktop_of('e')
+        response = self.send_get_request_from_desktop_of('e')
 
         self.assertEqual(404, response.status_code)
 
     def test_redirect_from_different_devices(self):
-        response = self.get_request_from_desktop_of('v')
+        response = self.send_get_request_from_desktop_of('v')
 
         self.assertEqual(302, response.status_code)
         self.assertEqual(self.long_url, response.location)
 
-        response = self.get_request_from_tablet_of('v')
+        response = self.send_get_request_from_tablet_of('v')
 
         self.assertEqual(302, response.status_code)
         self.assertEqual(self.tablet_long_url, response.location)
 
-        response = self.get_request_from_mobile_of('v')
+        response = self.send_get_request_from_mobile_of('v')
 
         self.assertEqual(302, response.status_code)
         self.assertEqual(self.mobile_long_url, response.location)
@@ -119,24 +120,16 @@ class TestViews(APITestCase):
             content_type='application/json'
         )
 
+        desktop_redirect_instance, tablet_redirect_instance, mobile_redirect_instance = self.retrieve_all_devices_redirects_for(self.hashed_id)
         self.assertEqual(200, response.status_code)
-        desktop_redirect_instance = DesktopRedirect.query.filter_by(
-            hashed_id=self.hashed_id
-        ).first()
         self.assertEqual(
             updated_desktop_long_url,
             desktop_redirect_instance.long_url
         )
-        tablet_redirect_instance = TabletRedirect.query.filter_by(
-            hashed_id=self.hashed_id
-        ).first()
         self.assertEqual(
             self.tablet_long_url,
             tablet_redirect_instance.long_url
         )
-        mobile_redirect_instance = MobileRedirect.query.filter_by(
-            hashed_id=self.hashed_id
-        ).first()
         self.assertEqual(
             self.mobile_long_url,
             mobile_redirect_instance.long_url
@@ -156,23 +149,15 @@ class TestViews(APITestCase):
         )
 
         self.assertEqual(200, response.status_code)
-        desktop_redirect_instance = DesktopRedirect.query.filter_by(
-            hashed_id=self.hashed_id
-        ).first()
+        desktop_redirect_instance, tablet_redirect_instance, mobile_redirect_instance = self.retrieve_all_devices_redirects_for(self.hashed_id)
         self.assertEqual(
             updated_desktop_long_url,
             desktop_redirect_instance.long_url
         )
-        tablet_redirect_instance = TabletRedirect.query.filter_by(
-            hashed_id=self.hashed_id
-        ).first()
         self.assertEqual(
             updated_tablet_long_url,
             tablet_redirect_instance.long_url
         )
-        mobile_redirect_instance = MobileRedirect.query.filter_by(
-            hashed_id=self.hashed_id
-        ).first()
         self.assertEqual(
             updated_mobile_long_url,
             mobile_redirect_instance.long_url
