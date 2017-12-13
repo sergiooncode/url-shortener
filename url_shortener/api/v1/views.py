@@ -4,14 +4,14 @@ from urllib.parse import urlparse
 from url_shortener.models import db, Redirect, MobileRedirect, TabletRedirect, \
     DesktopRedirect
 from url_shortener.utils import elapsed_time_in_seconds_since, \
-    get_device_model_from_device_string, get_device_model_from_request, \
-    get_short_url
+    get_device_model_from_device_string, get_device_model_from_request
 from url_shortener.api.v1.error_messages import *
 
+API_VERSION = 'v1'
 api_v1 = Blueprint(
     'api',
     __name__,
-    url_prefix="/{}".format(current_app.config['API_VERSION'])
+    url_prefix="/{}".format(API_VERSION)
 )
 
 
@@ -94,3 +94,9 @@ def update_long_url_mapped_for_device_to(hashed_id):
         redirect_instance.long_url = normalized_data[type_string]
     db.session.commit()
     return jsonify({}), 200
+
+
+def get_short_url(hashed_id):
+    host = current_app.config['APP_HOST']
+    port = current_app.config['APP_PORT']
+    return "http://{}:{}/{}/{}".format(host, port, API_VERSION, hashed_id)

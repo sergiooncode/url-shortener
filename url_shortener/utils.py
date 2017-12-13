@@ -43,10 +43,3 @@ def get_device_model_from_request(request):
     else:
         device_model = DesktopRedirect
     return device_model
-
-
-def get_short_url(hashed_id):
-    host = current_app.config['APP_HOST']
-    port = current_app.config['APP_PORT']
-    api_version = current_app.config['API_VERSION']
-    return "http://{}:{}/{}/{}".format(host, port, api_version, hashed_id)

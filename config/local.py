@@ -16,5 +16,3 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 APP_HOST = os.environ.get('APP_HOST')
 APP_PORT = os.environ.get('APP_PORT')
-
-API_VERSION = 'v1'
