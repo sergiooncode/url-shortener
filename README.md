@@ -203,6 +203,8 @@ Things that should be take into account for improvements:
 
 The tests are intentionally as end-to-end as possible meaning that things like sending an actual request to an endpoint using the testing client or creating fixtures in the database were preferred to using mocks, stubs, etc.
 
+The API version label was hardcoded in URI in tests.api.v1.test_views intentionally so that the tests will warn us if there is a change in API version (and/or API functionality) without refactor of the tests.
+
 
 ## TO-DO list
 
