@@ -1,8 +1,7 @@
 from flask import current_app, Blueprint, request, redirect, jsonify
 from urllib.parse import urlparse
 
-from url_shortener.models import db
-from url_shortener.models import Redirect, MobileRedirect, TabletRedirect, \
+from url_shortener.models import db, Redirect, MobileRedirect, TabletRedirect, \
     DesktopRedirect
 from url_shortener.utils import elapsed_time_in_seconds_since, \
     get_device_model_from_device_string, get_device_model_from_request, \
@@ -18,19 +17,23 @@ def redirect_to_long_url(hashed_id):
     if not hashed_id:
         return jsonify({}), 404
     device_model = get_device_model_from_request(request)
-    redirect_instance = db.session.query(device_model).filter_by(hashed_id=hashed_id).first()
+    redirect_instance = device_model.query.filter_by(
+        hashed_id=hashed_id
+    ).first()
     if not redirect_instance or not redirect_instance.long_url:
         error_message = NO_REDIRECT_FOUND_ERROR_MSG.format(
             hashed_id
         )
         return jsonify({"error": error_message}), 404
     redirect_instance.redirect_count += 1
-    db.commit()
+    db.session.commit()
     return redirect(redirect_instance.long_url)
 
 
 @api_v1.route('/redirects', methods=['POST'])
 def create_redirect():
+    if request.json is None:
+        return jsonify({"error": NO_LONG_URL_PROVIDED_ERROR_MSG}), 400
     long_url = request.json['longUrl']
     mobile_redirect = MobileRedirect(long_url=long_url)
     db.session.add(mobile_redirect)
@@ -49,7 +52,7 @@ def create_redirect():
 
 @api_v1.route('/redirects', methods=['GET'])
 def get_all_redirects():
-    redirects = db.session.query(Redirect).all()
+    redirects = Redirect.query.all()
     redirects_dict = {}
     for redirect in redirects:
         if redirect.hashed_id not in redirects_dict:
@@ -71,7 +74,7 @@ def update_long_url_mapped_for_device_to(hashed_id):
     if not data:
         return jsonify({"error": NO_CONFIG_PROVIDED_ERROR_MSG}), 400
     normalized_data = {k.lower(): v for k, v in data.items()}
-    redirect_instance = db.session.query(Redirect).filter_by(hashed_id=hashed_id).first()
+    redirect_instance = Redirect.query.filter_by(hashed_id=hashed_id).first()
     if redirect_instance is None:
         error_message = NO_REDIRECT_FOUND_NOTHING_TO_CONFIGURE_ERROR_MSG.format(hashed_id)
         return jsonify({"error": error_message}), 404
@@ -80,9 +83,9 @@ def update_long_url_mapped_for_device_to(hashed_id):
         if device_model is None:
             print('url_shortener.api.v1.views: No model associated to type string {}'.format(type_string))
             continue
-        redirect_instance = db.session.query(device_model).filter_by(
+        redirect_instance = device_model.query.filter_by(
             hashed_id=hashed_id
         ).first()
         redirect_instance.long_url = normalized_data[type_string]
-    db.commit()
+    db.session.commit()
     return jsonify({}), 200
