@@ -42,7 +42,7 @@ make test
 ./manage runserver -p 4000
 ```
 
-## API Usage
+## API v1 Usage
 ----
 ### Redirect to target url
 

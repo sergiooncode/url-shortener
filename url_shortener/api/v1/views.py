@@ -8,7 +8,11 @@ from url_shortener.utils import elapsed_time_in_seconds_since, \
     get_short_url
 from url_shortener.api.v1.error_messages import *
 
-api_v1 = Blueprint('api', __name__, url_prefix='/v1')
+api_v1 = Blueprint(
+    'api',
+    __name__,
+    url_prefix="/{}".format(current_app.config['API_VERSION'])
+)
 
 
 @api_v1.route('/', methods=['GET'], defaults={'hashed_id': None})

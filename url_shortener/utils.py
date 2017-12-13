@@ -46,5 +46,7 @@ def get_device_model_from_request(request):
 
 
 def get_short_url(hashed_id):
-    base_url = current_app.config['SERVER_NAME']
-    return "http://{}/{}".format(base_url, hashed_id)
+    host = current_app.config['APP_HOST']
+    port = current_app.config['APP_PORT']
+    api_version = current_app.config['API_VERSION']
+    return "http://{}:{}/{}/{}".format(host, port, api_version, hashed_id)
