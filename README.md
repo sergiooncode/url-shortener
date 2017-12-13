@@ -230,3 +230,5 @@ Server: Werkzeug/0.13 Python/3.6.2
 <h1>Redirecting...</h1>
 <p>You should be redirected automatically to target URL: <a href="www.marca.com">www.marca.com</a>.  If not click the link.
 ```
+
+- Fix the markdown in this documentation so headings are shown properly. Github seemed to have changed their markdown flavor and the headings won't get rendered appropriately.
